@@ -14,8 +14,8 @@ FROM viaductoss/ksops:$KSOPS_VERSION as ksops-builder
 
 FROM ghcr.io/argoproj/argo-cd/argocd:$ARGO_CD_VERSION
 
-# Switch to root for the ability to perform install
-USER root
+# # Switch to root for the ability to perform install
+# USER root
 
 ARG PKG_NAME=ksops
 
@@ -25,5 +25,5 @@ COPY --from=ksops-builder /usr/local/bin/kustomize /usr/local/bin/kustomize
 # Add ksops executable to path
 COPY --from=ksops-builder /usr/local/bin/ksops /usr/local/bin/ksops
 
-# Switch back to non-root user
-USER argocd
+# # Switch back to non-root user
+# USER argocd
