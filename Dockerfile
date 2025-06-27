@@ -14,16 +14,32 @@ FROM viaductoss/ksops:$KSOPS_VERSION as ksops-builder
 
 FROM ghcr.io/argoproj/argo-cd/argocd:$ARGO_CD_VERSION
 
-# # Switch to root for the ability to perform install
-# USER root
+# Switch to root for the ability to perform install
+USER root
+
+# Set the kustomize home directory
+ENV XDG_CONFIG_HOME=$HOME/.config
+ENV KUSTOMIZE_PLUGIN_PATH=$XDG_CONFIG_HOME/kustomize/plugin/
+
+# ARGOCD_USER_ID
+ENV ARGOCD_USER_ID=999
 
 ARG PKG_NAME=ksops
 
-# Override the default kustomize executable with the Go built version
-COPY --from=ksops-builder /usr/local/bin/kustomize /usr/local/bin/kustomize
+# # Override the default kustomize executable with the Go built version
+# COPY --from=ksops-builder /usr/local/bin/kustomize /usr/local/bin/kustomize
 
-# Add ksops executable to path
-COPY --from=ksops-builder /usr/local/bin/ksops /usr/local/bin/ksops
+# # Add ksops executable to path
+# COPY --from=ksops-builder /usr/local/bin/ksops /usr/local/bin/ksops
+
+# Override the default kustomize executable with the Go built version
+COPY --from=ksops-builder /go/bin/kustomize /usr/local/bin/kustomize
+
+# Copy the plugin to kustomize plugin path
+COPY --from=ksops-builder /go/src/github.com/viaduct-ai/kustomize-sops/*  $KUSTOMIZE_PLUGIN_PATH/viaduct.ai/v1/${PKG_NAME}/
 
 # # Switch back to non-root user
 # USER argocd
+
+# Switch back to non-root user
+USER $ARGOCD_USER_ID
