@@ -19,6 +19,8 @@ USER root
 
 ARG PKG_NAME=ksops
 
+ENV ARGOCD_USER_ID=999
+
 # Override the default kustomize executable with the Go built version
 COPY --from=ksops-builder /usr/local/bin/kustomize /usr/local/bin/kustomize
 
@@ -26,4 +28,4 @@ COPY --from=ksops-builder /usr/local/bin/kustomize /usr/local/bin/kustomize
 COPY --from=ksops-builder /usr/local/bin/ksops /usr/local/bin/ksops
 
 # Switch back to non-root user
-USER argocd
+USER $ARGOCD_USER_ID
